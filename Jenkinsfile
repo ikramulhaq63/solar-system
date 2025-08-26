@@ -12,18 +12,22 @@ pipeline {
                 '''
             }
         }
-
-        // Uncomment this block if you want npm audit
-        /*
-        stage('NPM dependencies audit') {
+        stage('NPM install dependencies') {
             steps {
                 sh '''
-                    npm audit --audit-level=critical
+                    npm install
                     echo $?
                 '''
             }
         }
-        */
+        // stage('NPM dependencies audit') {
+        //     steps {
+        //         sh '''
+        //             npm audit --audit-level=critical
+        //             echo $?
+        //         '''
+        //     }
+        // }
     }
 }
 
