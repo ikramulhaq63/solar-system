@@ -4,15 +4,18 @@ pipeline {
         nodejs "nodejs-22-6-0"
     }
     stages {
-        stage('Nodejs version') { // Fixed: stage block needs 'name' inside quotes and proper syntax
+        stage{
+            name "Nodejs version"
             steps {
                 sh '''
                 node -v
+                npm -v
                 '''
             }
         }
-        // stage('NPM dependencies audit') { // Uncomment and fix if needed
-        //     steps {
+        // stage{
+        //     name "NPM dependencies audit"
+        //     steps{
         //         sh '''
         //         npm audit --audit-level=critical
         //         echo $?
