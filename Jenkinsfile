@@ -4,23 +4,26 @@ pipeline {
         nodejs "nodejs-22-6-0"
     }
     stages {
-        stage{
-            name "Nodejs version"
+        stage('Nodejs version') {
             steps {
                 sh '''
-                node -v
-                npm -v
+                    node -v
+                    npm -v
                 '''
             }
         }
-        // stage{
-        //     name "NPM dependencies audit"
-        //     steps{
-        //         sh '''
-        //         npm audit --audit-level=critical
-        //         echo $?
-        //         '''
-        //     }
-        // }
+
+        // Uncomment this block if you want npm audit
+        /*
+        stage('NPM dependencies audit') {
+            steps {
+                sh '''
+                    npm audit --audit-level=critical
+                    echo $?
+                '''
+            }
+        }
+        */
     }
 }
+
