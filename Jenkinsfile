@@ -21,26 +21,26 @@ pipeline {
             }
         }
         stage('Dependencies Scanning') {
-            parallel{
+            parallel {
                 stage('NPM dependencies audit') {
-                            steps {
-                                sh '''
-                                    npm audit --audit-level=critical
-                                    echo $?
-                                '''
-                            }
-                        }
-                stage("OWASP Dependency Check") {
+                    steps {
+                        sh '''
+                            npm audit --audit-level=critical
+                            echo $?
+                        '''
+                    }
+                }
+                stage('OWASP Dependency Check') {
                     steps {
                         dependencyCheck additionalArguments: '''
-                            --scan \'./\'
-                            --format \'ALL\"
-                            --out \'./\'
-                            --prettyPrint''', odcInstallation: 'OWASP-Dep-Check-10'
+                            --scan './'
+                            --format 'ALL'
+                            --out './'
+                            --prettyPrint
+                        ''', odcInstallation: 'OWASP-Dep-Check-10'
                     }
                 }
             }
         }
     }
 }
-
