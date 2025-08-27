@@ -43,6 +43,13 @@ pipeline {
                         publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: './', reportFiles: 'dependency-check-report.html', reportName: 'Dependency_CheckHTML Report', reportTitles: '', useWrapperFileDirectly: true])
                     }
                 }
+                stage('unit tests') {
+                    steps {
+                        sh '''
+                            npm test
+                        '''
+                    }
+                }
             }
         }
     }
