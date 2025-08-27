@@ -20,14 +20,14 @@ pipeline {
                 '''
             }
         }
-        // stage('NPM dependencies audit') {
-        //     steps {
-        //         sh '''
-        //             npm audit --audit-level=critical
-        //             echo $?
-        //         '''
-        //     }
-        // }
+        stage('NPM dependencies audit') {
+            steps {
+                sh '''
+                    npm audit --audit-level=critical
+                    echo $?
+                '''
+            }
+        }
     }
 }
 
