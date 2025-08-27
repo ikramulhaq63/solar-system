@@ -39,6 +39,7 @@ pipeline {
                             --prettyPrint
                         ''', odcInstallation: 'OWASP-Dep-Check-10'
                         dependencyCheckPublisher failedTotalCritical: 1, pattern: 'dependency-check-report.xml', stopBuild: true
+                        junit allowEmptyResults: true, keepProperties: true, testResults: 'dependency-check-junit.xml'
                         publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: './', reportFiles: 'dependency-check-report.html', reportName: 'Dependency_CheckHTML Report', reportTitles: '', useWrapperFileDirectly: true])
                     }
                 }
