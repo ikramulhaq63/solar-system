@@ -20,12 +20,25 @@ pipeline {
                 '''
             }
         }
-        stage('NPM dependencies audit') {
-            steps {
-                sh '''
-                    npm audit --audit-level=critical
-                    echo $?
-                '''
+        stage('Dependencies Scanning') {
+            parallel{
+                stage('NPM dependencies audit') {
+                            steps {
+                                sh '''
+                                    npm audit --audit-level=critical
+                                    echo $?
+                                '''
+                            }
+                        }
+                stage("OWASP Dependency Check") {
+                    steps {
+                        dependencyCheck additionalArguments: '''
+                            --scan \'./\'
+                            --format \'ALL\"
+                            --out \'./\'
+                            --prettyPrint''', odcInstallation: 'OWASP-Dep-Check-10'
+                    }
+                }
             }
         }
     }
