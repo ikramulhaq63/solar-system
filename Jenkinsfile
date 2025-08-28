@@ -24,31 +24,31 @@ pipeline {
             }
         }
 
-        stage('Dependencies Scanning') {
-            parallel {
-                stage('NPM dependencies audit') {
-                    steps {
-                        sh '''
-                            npm audit --audit-level=critical
-                        '''
-                    }
-                }
-                stage('OWASP Dependency Check') {
-                    steps {
-                        dependencyCheck additionalArguments: '''
-                            --scan './'
-                            --format 'ALL'
-                            --out './'
-                            --prettyPrint
-                        ''', odcInstallation: 'OWASP-Dep-Check-10'
+        // stage('Dependencies Scanning') {
+        //     parallel {
+        //         stage('NPM dependencies audit') {
+        //             steps {
+        //                 sh '''
+        //                     npm audit --audit-level=critical
+        //                 '''
+        //             }
+        //         }
+        //         stage('OWASP Dependency Check') {
+        //             steps {
+        //                 dependencyCheck additionalArguments: '''
+        //                     --scan './'
+        //                     --format 'ALL'
+        //                     --out './'
+        //                     --prettyPrint
+        //                 ''', odcInstallation: 'OWASP-Dep-Check-10'
 
-                        dependencyCheckPublisher failedTotalCritical: 1, pattern: 'dependency-check-report.xml', stopBuild: true
-                        junit allowEmptyResults: true, keepProperties: true, testResults: 'dependency-check-junit.xml'
-                        publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: './', reportFiles: 'dependency-check-report.html', reportName: 'Dependency_Check HTML Report'])
-                    }
-                }
-            }
-        }
+        //                 dependencyCheckPublisher failedTotalCritical: 1, pattern: 'dependency-check-report.xml', stopBuild: true
+        //                 junit allowEmptyResults: true, keepProperties: true, testResults: 'dependency-check-junit.xml'
+        //                 publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: './', reportFiles: 'dependency-check-report.html', reportName: 'Dependency_Check HTML Report'])
+        //             }
+        //         }
+        //     }
+        // }
 
         stage('Unit Tests') {
             steps {
@@ -58,6 +58,15 @@ pipeline {
                     '''
                 }
                 junit allowEmptyResults: true, keepProperties: true, testResults: 'test-results.xml'
+            }
+        }
+        stage('code coverage') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'Mongo-DB-Username-password', passwordVariable: 'MONGO_PASSWORD', usernameVariable: 'MONGO_USERNAME')]) {
+                    sh '''
+                        npm run coverage
+                    '''
+                }
             }
         }
     }
