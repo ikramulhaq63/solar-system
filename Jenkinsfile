@@ -54,13 +54,16 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'Mongo-DB-Username-password', passwordVariable: 'MONGO_PASSWORD', usernameVariable: 'MONGO_USERNAME')]) {
                     sh '''
+                        export MOCHA_FILE=test-results.xml
                         npm test
                     '''
                 }
                 junit allowEmptyResults: true, keepProperties: true, testResults: 'test-results.xml'
+                archiveArtifacts artifacts: 'test-results.xml', allowEmptyArchive: true
             }
         }
-        stage('code coverage') {
+
+        stage('Code Coverage') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'Mongo-DB-Username-password', passwordVariable: 'MONGO_PASSWORD', usernameVariable: 'MONGO_USERNAME')]) {
                     catchError(buildResult: 'SUCCESS', message: 'Opps! We will fix this issue in the next release', stageResult: 'UNSTABLE') {
@@ -69,8 +72,8 @@ pipeline {
                         '''
                     }
                 }
+                publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Code Coverage HTML Report'])
             }
-            publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: 'coverage/locv-result', reportFiles: 'index.html', reportName: 'Code Coverage HTML Reports'])
         }
     }
 }
