@@ -3,6 +3,13 @@ pipeline {
     tools {
         nodejs "nodejs-22-6-0"
     }
+    environment {
+        // Define environment variables
+        MONGO_URI = 'mongodb://adminUser:StrongPassword123@localhost:27017/planets?authSource=admin'
+        MONGO_USERNAME = 'adminUser'
+        MONGO_PASSWORD = 'StrongPassword123' // Consider using Jenkins credentials plugin for security
+        NODE_ENV = 'development'
+    }
     stages {
         stage('Nodejs version') {
             steps {
