@@ -6,9 +6,9 @@ pipeline {
     environment {
         // Define environment variables
         MONGO_URI = 'mongodb://adminUser:StrongPassword123@localhost:27017/planets?authSource=admin'
-        MONGO_USERNAME = 'adminUser'
-        MONGO_PASSWORD = 'StrongPassword123' // Consider using Jenkins credentials plugin for security
-        NODE_ENV = 'development'
+        // MONGO_USERNAME = 'adminUser'
+        // MONGO_PASSWORD = 'StrongPassword123' // Consider using Jenkins credentials plugin for security
+        // NODE_ENV = 'development'
     }
     stages {
         stage('Nodejs version') {
@@ -50,17 +50,17 @@ pipeline {
                         publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: './', reportFiles: 'dependency-check-report.html', reportName: 'Dependency_CheckHTML Report', reportTitles: '', useWrapperFileDirectly: true])
                     }
                 }
-                stage('unit tests') {
-                    steps {
-                        sh '''
-                            export MONGO_URI=${MONGO_URI}
-                            export MONGO_USERNAME=${MONGO_USERNAME}
-                            export MONGO_PASSWORD=${MONGO_PASSWORD}
-                            export NODE_ENV=${NODE_ENV}
-                            npm test
-                        '''
-                    }
+        stage('unit tests') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'Mongo-DB-Username-password', passwordVariable: 'MONGO_PASSWORD', usernameVariable: 'MONGO_USERNAME')]) {
+                    sh '''
+                        npm test
+                    '''
                 }
+
+                junit allowEmptyResults: true, keepProperties: true, testResults: 'test-results.xml'
+            }
+        }
             }
         }
     }
