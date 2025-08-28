@@ -10,22 +10,20 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '/')));
 app.use(cors());
 
-// Connect to MongoDB using environment variables
 mongoose.connect(process.env.MONGO_URI, {
-    auth: {
-        username: process.env.MONGO_USERNAME,
-        password: process.env.MONGO_PASSWORD
-    },
-    authSource: 'admin'
+    user: process.env.MONGO_USERNAME,
+    pass: process.env.MONGO_PASSWORD,
+    useNewUrlParser: true,
+    useUnifiedTopology: true
 }).then(() => {
-    console.log("MongoDB Connection Successful");
+    console.log("✅ MongoDB Connection Successful");
 }).catch(err => {
-    console.log("error!! " + err);
+    console.error("❌ MongoDB Connection Error:", err.message);
 });
 
-var Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-var dataSchema = new Schema({
+const dataSchema = new Schema({
     name: String,
     id: Number,
     description: String,
@@ -33,48 +31,48 @@ var dataSchema = new Schema({
     velocity: String,
     distance: String
 });
-var planetModel = mongoose.model('planets', dataSchema);
+const Planet = mongoose.model('planets', dataSchema);
 
+// 🔥 FIXED: async/await instead of callback
 app.post('/planet', async (req, res) => {
     try {
-        const planetData = await planetModel.findOne({ id: req.body.id });
+        const planetData = await Planet.findOne({ id: req.body.id });
+
         if (!planetData) {
-            return res.status(404).send("Error in Planet Data: No planet found with id " + req.body.id);
+            return res.status(404).json({ error: "Planet not found" });
         }
-        res.send(planetData);
+
+        res.json(planetData);
     } catch (err) {
-        res.status(500).send("Error in Planet Data");
+        console.error("Error fetching planet:", err);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
-app.get('/', async (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '/', 'index.html'));
 });
 
 app.get('/os', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send({
-        "os": OS.hostname(),
-        "env": process.env.NODE_ENV
+    res.json({
+        os: OS.hostname(),
+        env: process.env.NODE_ENV
     });
 });
 
 app.get('/live', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send({
-        "status": "live"
-    });
+    res.json({ status: "live" });
 });
 
 app.get('/ready', (req, res) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.send({
-        "status": "ready"
-    });
+    res.json({ status: "ready" });
 });
 
-app.listen(3000, () => {
-    console.log("Server successfully running on port - " + 3000);
-});
+// Only start server if not running under tests
+if (require.main === module) {
+    app.listen(3000, () => {
+        console.log("🚀 Server running on port 3000");
+    });
+}
 
 module.exports = app;
