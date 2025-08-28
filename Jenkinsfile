@@ -53,6 +53,10 @@ pipeline {
                 stage('unit tests') {
                     steps {
                         sh '''
+                            export MONGO_URI=${MONGO_URI}
+                            export MONGO_USERNAME=${MONGO_USERNAME}
+                            export MONGO_PASSWORD=${MONGO_PASSWORD}
+                            export NODE_ENV=${NODE_ENV}
                             npm test
                         '''
                     }

@@ -1,4 +1,3 @@
-require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const OS = require('os');
@@ -11,14 +10,13 @@ app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '/')));
 app.use(cors());
 
-// Connect to MongoDB using Promises
+// Connect to MongoDB using environment variables
 mongoose.connect(process.env.MONGO_URI, {
     auth: {
         username: process.env.MONGO_USERNAME,
         password: process.env.MONGO_PASSWORD
     },
-    useNewUrlParser: true,
-    useUnifiedTopology: true
+    authSource: 'admin'
 }).then(() => {
     console.log("MongoDB Connection Successful");
 }).catch(err => {
@@ -37,7 +35,6 @@ var dataSchema = new Schema({
 });
 var planetModel = mongoose.model('planets', dataSchema);
 
-// Use async/await for the /planet endpoint
 app.post('/planet', async (req, res) => {
     try {
         const planetData = await planetModel.findOne({ id: req.body.id });
