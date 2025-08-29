@@ -60,9 +60,6 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 sh '''
-                    // echo Colon-Separated - $MONGO_DB_CREDENTIALS
-                    // echo "Username: $MONGO_DB_CREDENTIALS_USR"
-                    // echo "Password: $MONGO_DB_CREDENTIALS_PSW"
                     fuser -k 3000/tcp || true # Free port 3000
                     export MOCHA_FILE=test-results.xml
                     npm test
