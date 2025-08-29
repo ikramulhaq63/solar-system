@@ -7,8 +7,8 @@ pipeline {
         // Store credentials securely
         MONGO_DB_CREDENTIALS = credentials('Mongo-DB-Username-password') // Assumes a username/password credential ID
         MONGO_URI = 'mongodb://adminUser:StrongPassword123@localhost:27017/planets?authSource=admin'
-        MONGO_USERNAME = "User_ID"
-        MONGO_PASSWORD = "Mongo_Password"
+        MONGO_USERNAME = credentials("User_ID")
+        MONGO_PASSWORD = credentials("Mongo_Password")
         NODE_ENV = 'development'
     }
     stages {
