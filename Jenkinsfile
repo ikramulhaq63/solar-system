@@ -10,6 +10,7 @@ pipeline {
         MONGO_USERNAME = credentials("User_ID")
         MONGO_PASSWORD = credentials("Mongo_Password")
         NODE_ENV = 'development'
+        SONAR_QUBE = tool 'sonar-qube-scanner-7.2.0';
     }
     stages {
         stage('Nodejs version') {
@@ -60,6 +61,9 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 sh '''
+                    echo Colon-Separated - $MONGO_DB_CREDENTIALS
+                    echo "Username: $MONGO_DB_CREDENTIALS_USR"
+                    echo "Password: $MONGO_DB_CREDENTIALS_PSW"
                     fuser -k 3000/tcp || true # Free port 3000
                     export MOCHA_FILE=test-results.xml
                     npm test
@@ -80,6 +84,17 @@ pipeline {
                         echo $?
                     '''
                 }
+            }
+        }
+        stage('sonarQube Analysis') {
+            steps {
+                sh '$SONAR_QUBE'
+                sh '''
+                    $SONAR_QUBE/bin/sonar \
+                    -Dsonar.host.url=http://100.113.62.93:9000 \
+                    -Dsonar.token=sqp_a3283e520e7e2564c3b2f884557a21793e0590d5 \
+                    -Dsonar.projectKey=solar-system-project
+                '''
             }
         }
     }
