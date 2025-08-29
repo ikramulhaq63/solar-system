@@ -88,13 +88,9 @@ pipeline {
         }
         stage('sonarQube Analysis') {
             steps {
-                sh '$SONAR_QUBE'
-                sh '''
-                    $SONAR_QUBE/bin/sonar \
-                    -Dsonar.host.url=http://100.113.62.93:9000 \
-                    -Dsonar.token=sqp_a3283e520e7e2564c3b2f884557a21793e0590d5 \
-                    -Dsonar.projectKey=solar-system-project
-                '''
+                withSonarQubeEnv('SonarQube') {
+                            sh "${SONAR_QUBE}/bin/sonar-scanner -Dsonar.host.url=http://100.113.62.93:9000 -Dsonar.token=sqp_a3283e520e7e2564c3b2f884557a21793e0590d5 -Dsonar.projectKey=solar-system-project"
+                        }
             }
         }
     }
