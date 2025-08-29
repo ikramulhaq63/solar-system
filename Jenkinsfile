@@ -6,9 +6,9 @@ pipeline {
     environment {
         // Store credentials securely
         MONGO_DB_CREDENTIALS = credentials('Mongo-DB-Username-password') // Assumes a username/password credential ID
-        MONGO_URI = "mongodb://${MONGO_DB_CREDENTIALS_USR}: ${MONGO_DB_CREDENTIALS_PSW}@localhost:27017/planets?authSource=admin"
-        MONGO_USERNAME = "${MONGO_DB_CREDENTIALS_USR}"
-        MONGO_PASSWORD = "${MONGO_DB_CREDENTIALS_PSW}"
+        MONGO_URI = 'mongodb://adminUser:StrongPassword123@localhost:27017/planets?authSource=admin'
+        MONGO_USERNAME = "User_ID"
+        MONGO_PASSWORD = "Mongo_Password"
         NODE_ENV = 'development'
     }
     stages {
@@ -60,9 +60,9 @@ pipeline {
         stage('Unit Tests') {
             steps {
                 sh '''
-                    echo "Mongo URI: $MONGO_URI"
-                    echo "Username: $MONGO_USERNAME"
-                    echo "Password: $MONGO_PASSWORD"
+                    echo Colon-Separated - $MONGO_DB_CREDENTIALS
+                    echo "Username: $MONGO_DB_CREDENTIALS_USR"
+                    echo "Password: $MONGO_DB_CREDENTIALS_PSW"
                     fuser -k 3000/tcp || true # Free port 3000
                     export MOCHA_FILE=test-results.xml
                     npm test
