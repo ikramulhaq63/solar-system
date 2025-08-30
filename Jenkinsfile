@@ -89,7 +89,7 @@ pipeline {
         stage('sonarQube Analysis') {
             steps {
                 timeout(time: 120, unit: 'SECONDS'){
-                    withsonarQubeEnv('sonar-qube-server') {
+                    withSonarQubeEnv('sonar-qube-server') {
                         sh 'echo $SONAR_QUBE'
                         sh '''
                             $SONAR_QUBE/bin/sonar-scanner \
