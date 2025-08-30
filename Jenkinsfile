@@ -88,14 +88,17 @@ pipeline {
         }
         stage('sonarQube Analysis') {
             steps {
-                sh 'echo $SONAR_QUBE'
-                sh '''
-                    $SONAR_QUBE/bin/sonar-scanner \
-                    -Dsonar.host.url=http://100.113.62.93:9000 \
-                    -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info \
-                    -Dsonar.token=sqp_a3283e520e7e2564c3b2f884557a21793e0590d5 \
-                    -Dsonar.projectKey=solar-system-project
-                '''
+                timeout(time: 120, unit: 'SECONDS'){
+                    withsonarQubeEnv('sonar-qube-server') {
+                        sh 'echo $SONAR_QUBE'
+                        sh '''
+                            $SONAR_QUBE/bin/sonar-scanner \
+                            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info \
+                            -Dsonar.projectKey=solar-system-project
+                        '''
+                    }
+                    // waitForQualityGate abortPipeline: true
+                } 
             }
         }
     }
