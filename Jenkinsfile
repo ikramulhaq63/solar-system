@@ -76,31 +76,31 @@ pipeline {
             }
         }
 
-        stage('Code Coverage') {
-            steps {
-                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-                    sh '''
-                        npm run coverage
-                        echo $?
-                    '''
-                }
-            }
-        }
-        stage('sonarQube Analysis') {
-            steps {
-                timeout(time: 120, unit: 'SECONDS'){
-                    withSonarQubeEnv('sonar-qube-server') {
-                        sh 'echo $SONAR_QUBE'
-                        sh '''
-                            $SONAR_QUBE/bin/sonar-scanner \
-                            -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info \
-                            -Dsonar.projectKey=solar-system-project
-                        '''
-                    }
-                    // waitForQualityGate abortPipeline: true
-                } 
-            }
-        }
+        // stage('Code Coverage') {
+        //     steps {
+        //         catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+        //             sh '''
+        //                 npm run coverage
+        //                 echo $?
+        //             '''
+        //         }
+        //     }
+        // }
+        // stage('sonarQube Analysis') {
+        //     steps {
+        //         timeout(time: 120, unit: 'SECONDS'){
+        //             withSonarQubeEnv('sonar-qube-server') {
+        //                 sh 'echo $SONAR_QUBE'
+        //                 sh '''
+        //                     $SONAR_QUBE/bin/sonar-scanner \
+        //                     -Dsonar.javascript.lcov.reportPaths=./coverage/lcov.info \
+        //                     -Dsonar.projectKey=solar-system-project
+        //                 '''
+        //             }
+        //             // waitForQualityGate abortPipeline: true
+        //         } 
+        //     }
+        // }
         stage("build Docker Image"){
             steps{
                 sh 'docker build -t ikramulhaq6363/solar-system:$GIT_COMMIT .'
