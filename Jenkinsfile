@@ -101,6 +101,11 @@ pipeline {
                 } 
             }
         }
+        stage("build Docker Image"){
+            steps{
+                sh 'docker build -t ikramulhaq6363/solar-system:$GIT_COMMIT .'
+            }
+        }
     }
     post {
         always {
