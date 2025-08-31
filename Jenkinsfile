@@ -69,11 +69,11 @@ pipeline {
                     npm test
                 '''
             }
-            post {
-                always {
-                    junit allowEmptyResults: true, keepProperties: true, testResults: 'test-results.xml'
-                }
-            }
+            // post {
+            //     always {
+            //         junit allowEmptyResults: true, keepProperties: true, testResults: 'test-results.xml'
+            //     }
+            // }
         }
 
         // stage('Code Coverage') {
