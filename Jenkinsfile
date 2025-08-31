@@ -145,6 +145,7 @@ pipeline {
     post {
         always {
             archiveArtifacts artifacts: 'test-results.xml', allowEmptyArchive: true
+            junit allowEmptyResults: true, keepProperties: true, testResults: 'test-results.xml'
             junit allowEmptyResults: true, keepLongStdio: true, testResults: 'trivy-image-CRITICAL-report.xml'
             junit allowEmptyResults: true, keepLongStdio: true, testResults: 'trivy-image-MEDIUM-report.xml'
             publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: './', reportFiles: 'trivy-image-CRITICAL-report.html', reportName: 'trivy Image CRITICAL Report'])
