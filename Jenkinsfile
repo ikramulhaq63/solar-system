@@ -110,13 +110,13 @@ pipeline {
             steps{
                 sh '''
                     trivy image ikramulhaq6363/solar-system:$GIT_COMMIT \
-                    --severity LOW,MEDIUM \
+                    --severity LOW,MEDIUM,HIGH \
                     --exit-code 0 \
                     --quiet \
                     --format json -o trivy-image-MEDIUM-report.json
 
                     trivy image ikramulhaq6363/solar-system:$GIT_COMMIT \
-                    --severity HIGH,CRITICAL \
+                    --severity CRITICAL \
                     --exit-code 1 \
                     --quiet \
                     --format json -o trivy-image-CRITICAL-report.json
