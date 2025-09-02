@@ -11,6 +11,7 @@ pipeline {
         MONGO_PASSWORD = credentials("Mongo_Password")
         NODE_ENV = 'development'
         SONAR_QUBE = tool 'sonar-qube-scanner-7.2.0';
+        GIT-HUB-TOKEN = credentials('github-token')
     }
     stages {
         stage('NodeJS and NPM version') {
@@ -171,6 +172,28 @@ pipeline {
         //         }
         //     }
         // }
+        stage("k8s Update Image Tag"){
+            steps{
+                sh 'git clone -b main https://github.com/ikramulhaq63/solar-system-gitops-argocd-gitea.git'
+                dir("solar-system-gitops-argocd-gitea/kubernetes"){
+                    sh '''
+                        ############ Replace docker image tag in deployment.yaml file ########
+                        git checkout main
+                        git checkout -b feature-$BUILD_ID
+                        sed -i "i#kramulhaq6363.*#ikramulhaq6363/solar-system:$GIT_COMMIT#g" deployment.yaml
+                        cat deployment.yaml
+
+                        ##########Commit and push the changes to main branch##########
+                        git config --global user.email "haq99831@gmail.com"
+                        git config --global user.name "ikramulhaq"
+                        git remote set-url origin https://$GIT-HUB-TOKEN@github.com/ikramulhaq63/solar-system-gitops-argocd-gitea.git
+                        git add .
+                        git commit -m "Update image tag to $GIT_COMMIT"
+                        git push -u origin feature-$BUILD_ID
+                    '''
+                }
+            }
+        }
     }
     post {
         always {
