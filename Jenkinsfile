@@ -230,7 +230,20 @@ pipeline {
             }
         }
 
-
+        stage('App Deployed?'){
+            steps{
+                timeout(time: 1, unit: 'DAYS') {
+                    input message: 'Has the application been deployed successfully and is it running as expected? Please verify and confirm to proceed with the DAST scan.', ok: 'Yes, proceed'
+                }
+            }
+        }
+        
+        stage('DAST - OWASP ZAP Scan') {
+            steps {
+                sh '''
+                    chmod 777 $(pwd)
+                    docker run -v $(pwd):/zap/wrk/:rw ghcr.io/zaproxy/zaproxy zap-api-scan.py -t http://100.68.106.70:30000/api-docs -f openapi -r zap_report.html -w zap_report.md -j zap_json_report.json -x zap_xml_report.xml
+                '''
     }
     post {
         always {
