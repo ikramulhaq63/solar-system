@@ -192,8 +192,8 @@ pipeline {
                             ############ Replace docker image tag in deployment.yaml file ########
                             git checkout main
                             git checkout -b feature-$BUILD_ID
-                            sed -i "s#ikramulhaq6363.*#ikramulhaq6363/solar-system:$GIT_COMMIT#g" deployment.yaml
-                            cat deployment.yaml
+                            sed -i "s#ikramulhaq6363.*#ikramulhaq6363/solar-system:$GIT_COMMIT#g" deployment.yml
+                            cat deployment.yml
 
                             ########## Commit and push the changes ##########
                             git config --global user.email "haq99831@gmail.com"
