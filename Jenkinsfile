@@ -207,6 +207,29 @@ pipeline {
                 }
             }
         }
+        stage("Create Pull Request") {
+            steps {
+                script {
+                    // PR title & body (you can customize these)
+                    def prTitle = "Update image tag to ${GIT_COMMIT}"
+                    def prBody  = "This PR updates the Kubernetes deployment image tag to commit ${GIT_COMMIT}"
+
+                    sh """
+                        curl -s -X POST \
+                          -H "Authorization: token $GIT_HUB_TOKEN" \
+                          -H "Accept: application/vnd.github.v3+json" \
+                          https://api.github.com/repos/ikramulhaq63/solar-system-gitops-argocd-gitea/pulls \
+                          -d '{
+                                "title": "${prTitle}",
+                                "head": "feature-${BUILD_ID}",
+                                "base": "main",
+                                "body": "${prBody}"
+                              }'
+                    """
+                }
+            }
+        }
+
 
     }
     post {
