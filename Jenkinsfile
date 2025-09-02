@@ -179,8 +179,8 @@ pipeline {
                         dir("solar-system-gitops-argocd-gitea") {
                             sh '''
                                 git fetch origin main
+                                git checkout main
                                 git reset --hard origin/main
-                                git pull
                             '''
                         }
                     } else {
