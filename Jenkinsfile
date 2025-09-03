@@ -238,21 +238,36 @@ pipeline {
             }
         }
         
-        stage('DAST - OWASP ZAP Scan') {
+        // stage('DAST - OWASP ZAP Scan') {
+        //     steps {
+        //         sh '''
+        //             chmod 777 $(pwd)
+        //             docker run -v $(pwd):/zap/wrk/:rw ghcr.io/zaproxy/zaproxy \
+        //             zap-api-scan.py \
+        //             -t http://100.68.106.70:30000/api-docs \
+        //             -f openapi \
+        //             -r zap_report.html \
+        //             -w zap_report.md \
+        //             -j zap_json_report.json \
+        //             -x zap_xml_report.xml \
+        //             -c zap_ignore_rules \
+        //             -I
+        //         '''
+        //     }
+        // }
+
+        stage('Upload - AWS S3 Bucket') {
             steps {
-                sh '''
-                    chmod 777 $(pwd)
-                    docker run -v $(pwd):/zap/wrk/:rw ghcr.io/zaproxy/zaproxy \
-                    zap-api-scan.py \
-                    -t http://100.68.106.70:30000/api-docs \
-                    -f openapi \
-                    -r zap_report.html \
-                    -w zap_report.md \
-                    -j zap_json_report.json \
-                    -x zap_xml_report.xml \
-                    -c zap_ignore_rules \
-                    -I
-                '''
+                withCredentials(credentials: 'aws-ec2-s3-lambda-creds', region: 'us-east-2') {
+                    sh '''
+                        ls -ltr
+                        mkdir reports-$BUILD_ID
+                        cp -rf coverage/ reports-$BUILD_ID/
+                        cp dependency*.* test-results.xml trivy*.* zap*.* reports-$BUILD_ID/
+                        ls -ltr reports-$BUILD_ID
+                    '''
+                    s3 upload(bucket: 'ikram-solar-system-bucket', path: "solar-system-app/$BUILD_ID/", file: "reports-$BUILD_ID/", workingDir: '', acl: 'PublicRead')
+                }
             }
         }
     }
@@ -269,4 +284,3 @@ pipeline {
         }
     }
 }
-  
