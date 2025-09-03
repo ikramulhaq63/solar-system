@@ -242,7 +242,16 @@ pipeline {
             steps {
                 sh '''
                     chmod 777 $(pwd)
-                    docker run -v $(pwd):/zap/wrk/:rw ghcr.io/zaproxy/zaproxy zap-api-scan.py -t http://100.68.106.70:30000/api-docs -f openapi -r zap_report.html -w zap_report.md -j zap_json_report.json -x zap_xml_report.xml -c zap_ignore_rules
+                    docker run -v $(pwd):/zap/wrk/:rw ghcr.io/zaproxy/zaproxy \
+                    zap-api-scan.py \
+                    -t http://100.68.106.70:30000/api-docs \
+                    -f openapi \
+                    -r zap_report.html \
+                    -w zap_report.md \
+                    -j zap_json_report.json \
+                    -x zap_xml_report.xml \
+                    -c zap_ignore_rules \
+                    -I
                 '''
             }
         }
