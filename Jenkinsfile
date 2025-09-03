@@ -266,7 +266,7 @@ pipeline {
                         cp dependency*.* test-results.xml trivy*.* zap*.* reports-$BUILD_ID/
                         ls -ltr reports-$BUILD_ID
                     '''
-                    s3 upload(bucket: 'ikram-solar-system-bucket', path: "solar-system-app/$BUILD_ID/", file: "reports-$BUILD_ID/", workingDir: '', acl: 'PublicRead')
+                    s3Upload(file:"reports-$BUILD_ID/", bucket:'ikram-solar-system-bucket', path:"solar-system-app/$BUILD_ID/")
                 }
             }
         }
