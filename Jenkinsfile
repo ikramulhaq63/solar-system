@@ -258,7 +258,7 @@ pipeline {
 
         stage('Upload - AWS S3 Bucket') {
             steps {
-                withCredentials(credentials: 'aws-ec2-s3-lambda-creds', region: 'us-east-2') {
+                withAWS(credentials: 'aws-ec2-s3-lambda-creds', region: 'us-east-2') {
                     sh '''
                         ls -ltr
                         mkdir reports-$BUILD_ID
