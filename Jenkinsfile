@@ -242,7 +242,7 @@ pipeline {
             steps {
                 sh '''
                     chmod 777 $(pwd)
-                    docker run -v $(pwd):/zap/wrk/:rw ghcr.io/zaproxy/zaproxy zap-api-scan.py -t http://100.68.106.70:30000/api-docs -f openapi -r zap_report.html -w zap_report.md -j zap_json_report.json -x zap_xml_report.xml
+                    docker run -v $(pwd):/zap/wrk/:rw ghcr.io/zaproxy/zaproxy zap-api-scan.py -t http://100.68.106.70:30000/api-docs -f openapi -r zap_report.html -w zap_report.md -j zap_json_report.json -x zap_xml_report.xml -c zap_ignore_rules
                 '''
             }
         }
@@ -255,6 +255,7 @@ pipeline {
             // junit allowEmptyResults: true, keepLongStdio: true, testResults: 'trivy-image-MEDIUM-report.xml'
             // publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: './', reportFiles: 'trivy-image-CRITICAL-report.html', reportName: 'trivy Image CRITICAL Report'])
             // publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: './', reportFiles: 'trivy-image-MEDIUM-report.html', reportName: 'trivy Image MEDIUM Report'])
+            publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: './', reportFiles: 'zap_report.html', reportName: 'DAST - OWASP ZAP Report', reportTitles: 'DAST - OWASP ZAP Scan Report',useWrapperFileDirectly: true])
             publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, icon: '', keepAll: true, reportDir: 'coverage/lcov-report', reportFiles: 'index.html', reportName: 'Code Coverage HTML Report'])
         }
     }
