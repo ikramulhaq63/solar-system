@@ -279,6 +279,9 @@ pipeline {
         // }
 
         stage('Upload - AWS S3 Bucket') {
+            when {
+                branch 'Feature_Branch'
+            }
             steps {
                 withAWS(credentials: 'aws-ec2-s3-lambda-creds', region: 'us-east-2') {
                     sh '''
