@@ -103,6 +103,9 @@ pipeline {
         //     }
         // }
         stage("build Docker Image"){
+            when {
+                branch 'Feature_Branch'
+            }
             steps{
                 sh 'docker build -t ikramulhaq6363/solar-system:$GIT_COMMIT .'
             }
@@ -143,6 +146,9 @@ pipeline {
         //     }
         // }
         stage("push to docker hub"){
+            when {
+                branch 'Feature_Branch'
+            }
             steps{
                 withDockerRegistry(credentialsId: 'docker-hub-creds', url: "") {
                     sh 'docker push ikramulhaq6363/solar-system:$GIT_COMMIT'
@@ -173,6 +179,9 @@ pipeline {
         //     }
         // }
         stage("k8s Update Image Tag"){
+            when {
+                branch 'Feature_Branch'
+            }
             steps{
                 script {
                     if (fileExists("solar-system-gitops-argocd-gitea")) {
@@ -208,6 +217,9 @@ pipeline {
             }
         }
         stage("Create Pull Request") {
+            when {
+                branch 'Feature_Branch'
+            }
             steps {
                 script {
                     // PR title & body (you can customize these)
@@ -231,6 +243,9 @@ pipeline {
         }
 
         stage('App Deployed?'){
+            when {
+                branch 'Feature_Branch'
+            }
             steps{
                 timeout(time: 1, unit: 'DAYS') {
                     input message: 'Has the application been deployed successfully and is it running as expected? Please verify and confirm to proceed with the DAST scan.', ok: 'Yes, proceed'
@@ -239,6 +254,10 @@ pipeline {
         }
         
         // stage('DAST - OWASP ZAP Scan') {
+                // when {
+                //     branch 'AWS_Production'
+                // }
+
         //     steps {
         //         sh '''
         //             chmod 777 $(pwd)
@@ -267,6 +286,42 @@ pipeline {
                         ls -ltr reports-$BUILD_ID
                     '''
                     s3Upload(file:"reports-$BUILD_ID/", bucket:'ikram-solar-system-bucket', path:"solar-system-app/$BUILD_ID/")
+                }
+            }
+        }
+
+        stage('Deploy to Production - Manual Approval') {
+            when {
+                branch 'AWS_Production'
+            }
+            steps{
+                timeout(time: 1, unit: 'DAYS') {
+                    input message: 'Deploy to production', ok: 'Yes, proceed', submitter: 'admin'
+                }
+            }
+        }
+
+        stage('lambda -s3 Upload and deploy'){
+            when {
+                branch 'AWS_Production'
+            }
+            steps{
+                withAWS(credentials: 'aws-ec2-s3-lambda-creds', region: 'us-east-2') {
+                    sh '''
+                        zip -qr solar-system-lambda-$BUILD_ID.zip app* package* index.html node*
+                        ls -ltr solar-system-lambda-$BUILD_ID.zip
+                    '''
+                    s3Upload(file:"solar-system-lambda-$BUILD_ID.zip", bucket:'mysolarsystemzip')
+
+                    sh '''
+                        aws lambda update-function-code --function-name mysolarsystemapp --s3-bucket mysorarsystemzip --s3-key solar-system-lambda-$BUILD_ID.zip
+                        aws lambda update-function-configuration \
+                            --function-name mysolarsystemapp \
+                            --handler app.handler \
+                            --timeout 30 \
+                            --memory-size 512 \
+                            --environment "Variables={NODE_ENV=production}"
+                    '''
                 }
             }
         }

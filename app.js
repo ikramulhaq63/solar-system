@@ -1,4 +1,3 @@
-require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const OS = require('os');
@@ -6,6 +5,7 @@ const bodyParser = require('body-parser');
 const mongoose = require("mongoose");
 const app = express();
 const cors = require('cors');
+const serverless = require('serverless-http');
 
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, '/')));
@@ -70,10 +70,11 @@ app.get('/ready', (req, res) => {
 });
 
 // Only start server if not running under tests
-if (require.main === module) {
-    app.listen(3000, () => {
-        console.log("🚀 Server running on port 3000");
-    });
-}
+// if (require.main === module) {
+//     app.listen(3000, () => {
+//         console.log("🚀 Server running on port 3000");
+//     });
+// }
 
-module.exports = app;
+// module.exports = app;
+module.exports.handler = serverless(app);
