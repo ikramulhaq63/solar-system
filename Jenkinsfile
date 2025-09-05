@@ -314,7 +314,6 @@ pipeline {
             steps{
                 withAWS(credentials: 'aws-ec2-s3-lambda-creds', region: 'us-east-2') {
                     sh '''
-                        # Clean up any existing project directory
                         # Navigate to the project directory
                         cd ~/solar-system
 
@@ -326,15 +325,9 @@ pipeline {
 
                         # Upload to S3
                         aws s3 cp solar-system-lambda-$BUILD_ID.zip s3://mysolarsystemzip/solar-system-lambda-$BUILD_ID.zip
-
+                        aws lambda update-function-configuration --function-name mysolarsystemapp --environment '{"Variables":{"MONGO_URI": "${MONGO_URI}","MONGO_USERNAME": "${MONGO_USERNAME}","MONGO_PASSWORD": "${MONGO_PASSWORD}"}}'
                         # Update Lambda function
                         aws lambda update-function-code --function-name mysolarsystemapp --s3-bucket mysolarsystemzip --s3-key solar-system-lambda-$BUILD_ID.zip
-                        # aws lambda update-function-configuration \
-                        #     --function-name mysolarsystemapp \
-                        #     --handler app.handler \
-                        #     --timeout 30 \
-                        #     --memory-size 512 \
-                        #     --environment "Variables={NODE_ENV=production}"
                     '''
                 }
             }
@@ -353,6 +346,3 @@ pipeline {
         }
     }
 }
-
-
-
