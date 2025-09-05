@@ -314,9 +314,6 @@ pipeline {
             steps{
                 withAWS(credentials: 'aws-ec2-s3-lambda-creds', region: 'us-east-2') {
                     sh '''
-                        # Ensure zip is installed
-                        sudo apt-get update
-                        sudo apt-get install -y zip
 
                         # Navigate to the project directory
                         cd ~/solar-system
