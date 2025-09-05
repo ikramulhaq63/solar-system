@@ -314,6 +314,7 @@ pipeline {
             steps{
                 withAWS(credentials: 'aws-ec2-s3-lambda-creds', region: 'us-east-2') {
                     sh '''
+                        # Clean up any existing project directory
                         # Navigate to the project directory
                         cd ~/solar-system
 
@@ -352,5 +353,6 @@ pipeline {
         }
     }
 }
+
 
 
