@@ -314,7 +314,6 @@ pipeline {
             steps{
                 withAWS(credentials: 'aws-ec2-s3-lambda-creds', region: 'us-east-2') {
                     sh '''
-
                         # Navigate to the project directory
                         cd ~/solar-system
 
@@ -329,13 +328,13 @@ pipeline {
 
                         # Update Lambda function
                         aws lambda update-function-code --function-name mysolarsystemapp --s3-bucket mysolarsystemzip --s3-key solar-system-lambda-$BUILD_ID.zip
-                        // aws lambda update-function-configuration \
-                        //     --function-name mysolarsystemapp \
-                        //     --handler app.handler \
-                        //     --timeout 30 \
-                        //     --memory-size 512 \
-                        //     --environment "Variables={NODE_ENV=production}"
-                    ''' 
+                        # aws lambda update-function-configuration \
+                        #     --function-name mysolarsystemapp \
+                        #     --handler app.handler \
+                        #     --timeout 30 \
+                        #     --memory-size 512 \
+                        #     --environment "Variables={NODE_ENV=production}"
+                    '''
                 }
             }
         }
