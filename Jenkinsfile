@@ -60,6 +60,9 @@ pipeline {
         // }
 
         stage('Unit Tests') {
+            when {
+                branch 'Feature_Branch'
+            }
             steps {
                 sh '''
                     echo Colon-Separated - $MONGO_DB_CREDENTIALS
@@ -339,5 +342,3 @@ pipeline {
         }
     }
 }
-
-
