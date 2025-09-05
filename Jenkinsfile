@@ -6,7 +6,7 @@ pipeline {
     environment {
         // Store credentials securely
         MONGO_DB_CREDENTIALS = credentials('Mongo-DB-Username-password') // Assumes a username/password credential ID
-        MONGO_URI = 'mongodb://adminUser:StrongPassword123@localhost:27017/planets?authSource=admin'
+        MONGO_URI = 'mongodb://adminUser:StrongPassword123@100.113.62.93:27017/planets?authSource=admin'
         MONGO_USERNAME = credentials("User_ID")
         MONGO_PASSWORD = credentials("Mongo_Password")
         NODE_ENV = 'development'
@@ -325,7 +325,12 @@ pipeline {
 
                         # Upload to S3
                         aws s3 cp solar-system-lambda-$BUILD_ID.zip s3://mysolarsystemzip/solar-system-lambda-$BUILD_ID.zip
-                        aws lambda update-function-configuration --function-name mysolarsystemapp --environment '{"Variables":{"MONGO_URI": "${MONGO_URI}","MONGO_USERNAME": "${MONGO_USERNAME}","MONGO_PASSWORD": "${MONGO_PASSWORD}"}}'
+                        aws lambda update-function-configuration \
+                            --function-name mysolarsystemapp \
+                            --handler app.handler \
+                            --timeout 30 \
+                            --memory-size 512 \
+                            --environment "{\"Variables\":{\"MONGO_URI\":\"mongodb://${MONGO_DB_CREDENTIALS_USR}:${MONGO_DB_CREDENTIALS_PSW}@100.113.62.93:27017/planets?authSource=admin\",\"MONGO_USERNAME\":\"${MONGO_USERNAME}\",\"MONGO_PASSWORD\":\"${MONGO_PASSWORD}\",\"NODE_ENV\":\"production\"}}"
                         # Update Lambda function
                         aws lambda update-function-code --function-name mysolarsystemapp --s3-bucket mysolarsystemzip --s3-key solar-system-lambda-$BUILD_ID.zip
                     '''
