@@ -314,20 +314,31 @@ pipeline {
             steps{
                 withAWS(credentials: 'aws-ec2-s3-lambda-creds', region: 'us-east-2') {
                     sh '''
-                        zip -qr solar-system-lambda-$BUILD_ID.zip app* package* index.html node*
-                        ls -ltr solar-system-lambda-$BUILD_ID.zip
-                    '''
-                    s3Upload(file:"solar-system-lambda-$BUILD_ID.zip", bucket:'mysolarsystemzip')
+                        # Ensure zip is installed
+                        sudo apt-get update
+                        sudo apt-get install -y zip
 
-                    sh '''
-                        aws lambda update-function-code --function-name mysolarsystemapp --s3-bucket mysorarsystemzip --s3-key solar-system-lambda-$BUILD_ID.zip
+                        # Navigate to the project directory
+                        cd ~/solar-system
+
+                        # Create the ZIP file with explicit file names
+                        zip -qr solar-system-lambda-$BUILD_ID.zip app.js app-controller.js app-test.js seed.js package.json package-lock.json node_modules index.html images
+
+                        # Verify the ZIP file
+                        ls -ltr solar-system-lambda-$BUILD_ID.zip
+
+                        # Upload to S3
+                        aws s3 cp solar-system-lambda-$BUILD_ID.zip s3://mysolarsystemzip/solar-system-lambda-$BUILD_ID.zip
+
+                        # Update Lambda function
+                        aws lambda update-function-code --function-name mysolarsystemapp --s3-bucket mysolarsystemzip --s3-key solar-system-lambda-$BUILD_ID.zip
                         aws lambda update-function-configuration \
                             --function-name mysolarsystemapp \
                             --handler app.handler \
                             --timeout 30 \
                             --memory-size 512 \
                             --environment "Variables={NODE_ENV=production}"
-                    '''
+                    ''' 
                 }
             }
         }
