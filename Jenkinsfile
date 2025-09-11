@@ -12,7 +12,7 @@ def slackNotificationMethod(String buildStatus = 'STARTED') {
         color = '#FFA500' // Orange
     }
 
-    slackSend(channel: '#jenkins-notifications', color: color, message: message)
+    slackSend(channel: 'jenkins-notification', color: color, message: message)
 }
 
 pipeline {
